@@ -23,7 +23,7 @@ export default function ChatBubble({ role, message, time }: Readonly<{ role: str
             <div
                 className={cn("relative isolate bg-white px-4 py-2 rounded-2xl flex flex-col gap-1 items-start max-w-[28rem]", {
                     'rounded-br-none bg-primary text-white': role === 'sender',
-                    'rounded-bl-none bg-primary/10': role === 'bot',
+                    'rounded-bl-none bg-[#f4f4f5]': role === 'bot',
                 })}
             >
                 <audio
