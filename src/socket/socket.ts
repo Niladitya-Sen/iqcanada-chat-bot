@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://iqcanada.waysdatalabs.com/", {
+const socket = io("https://iqcanada.waysdatalabs.com/", {
     autoConnect: true
 });
 
