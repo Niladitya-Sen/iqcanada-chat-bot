@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-responses: dict[str, str] = {
+responses = {
     "IQ Canada": "Since 2017, the IQ Canada team has worked with over 250 Start-ups from diverse industry segments,helping them seamlessly navigate the Canada Start-up Visa process",
     "startup visa program": "Canada's Start-up Visa Program supports innovative businesses in Canada by providing access to a talented pool of individuals, government support for innovation, and a direct pathway to immigration in Canada.",
     "eligibility": "To be eligible for Canada's Start-up Visa Program, entrepreneurs must have the skills and potential to build businesses in Canada that are innovative, can create jobs for Canadians, and can compete on a global scale.",
