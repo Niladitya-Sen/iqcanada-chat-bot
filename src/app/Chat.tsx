@@ -24,6 +24,8 @@ export default function Chat() {
     const [listening, setListening] = useState(false);
 
     useEffect(() => {
+        socket.connect();
+        socket.emit('joined');
         const recognition = new (window as any).webkitSpeechRecognition();
         const speechRecognitionList = new (window as any).webkitSpeechGrammarList();
         speechRecognitionList.addFromString(grammar, 1);
@@ -47,10 +49,10 @@ export default function Chat() {
         return () => {
             socket.off('connect');
         }
-    });
+    }, []);
 
     useEffect(() => {
-        socket.on('receive-message', (message: string) => {
+        socket.on('receive-message', ({ message }) => {
             setMessages(prev => [
                 ...prev,
                 {
@@ -84,7 +86,7 @@ export default function Chat() {
                 )
             }
         ]);
-        socket.emit('send-message', message);
+        socket.emit('send-message', { message });
         textareaRef.current.value = '';
     }
 
