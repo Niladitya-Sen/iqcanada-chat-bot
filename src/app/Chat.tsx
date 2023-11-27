@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Send, Mic, MicOff } from 'lucide-react';
 import ChatBubble from './ChatBubble';
+import socket from '@/socket/socket';
 
 type MessageType = {
     message: string;
@@ -38,12 +39,42 @@ export default function Chat() {
         if (chatDivRef.current) chatDivRef.current.scrollTop = chatDivRef.current.scrollHeight;
     }, [messages]);
 
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log('connected');
+        });
+
+        return () => {
+            socket.off('connect');
+        }
+    });
+
+    useEffect(() => {
+        socket.on('receive-message', (message: string) => {
+            setMessages(prev => [
+                ...prev,
+                {
+                    message,
+                    role: 'bot',
+                    time: new Date().toLocaleTimeString(
+                        'en-US',
+                        { hour: 'numeric', minute: 'numeric', hour12: true },
+                    )
+                }
+            ]);
+        });
+
+        return () => {
+            socket.off('receive-message');
+        }
+    });
+
     function sendMessage(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const message = textareaRef.current?.value;
         if (!message) return;
-        setMessages([
-            ...messages,
+        setMessages(prev => [
+            ...prev,
             {
                 message,
                 role: 'sender',
@@ -51,17 +82,9 @@ export default function Chat() {
                     'en-US',
                     { hour: 'numeric', minute: 'numeric', hour12: true },
                 )
-            },
-            {
-                message,
-                role: 'bot',
-                time: new Date().toLocaleTimeString(
-                    'en-US',
-                    { hour: 'numeric', minute: 'numeric', hour12: true },
-                )
             }
-
         ]);
+        socket.emit('send-message', message);
         textareaRef.current.value = '';
     }
 

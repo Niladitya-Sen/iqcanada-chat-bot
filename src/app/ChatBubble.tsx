@@ -9,8 +9,21 @@ export default function ChatBubble({ role, message, time }: Readonly<{ role: str
     const audioRef = React.useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        const msg = message.endsWith('?') ? message.slice(0, -1) : message;
-        setAudioSrc(`https://ae.arrive.waysdatalabs.com/node-api/get-speech/${msg}?language=en`);
+        async function getAudio() {
+            const res = await fetch('https://ae.arrive.waysdatalabs.com/node-api/get-speech?language=en', {
+                method: 'POST',
+                body: JSON.stringify({
+                    message
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            setAudioSrc(url);
+        }
+        getAudio();
     }, [message]);
 
     return (
@@ -31,7 +44,15 @@ export default function ChatBubble({ role, message, time }: Readonly<{ role: str
                     ref={audioRef}
                     autoPlay={false}
                 />
-                <p>{message}</p>
+                {
+                    message.split('\n').map((msg, index) => (
+                        <p
+                            key={index}
+                        >
+                            {msg}
+                        </p>
+                    ))
+                }
                 <div
                     className={cn("text-xs self-end flex justify-between items-center w-full gap-2", {
                         'text-white/80': role === 'sender',
